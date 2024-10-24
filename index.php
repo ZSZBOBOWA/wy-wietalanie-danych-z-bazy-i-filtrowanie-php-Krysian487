@@ -6,6 +6,12 @@
     <title>Formularz</title>
 </head>
 <body>
+
+<form method="POST" action="index.php">
+    Wpisz nazwisko: <input type="text" name="nazwisko">
+    <input type="submit" value="Filtruj">
+</form>
+
     <?php
         $servername = "localhost";
         $username = "root";
@@ -17,25 +23,31 @@
         if (!$conn) {
             die("Błąd połączenie: " . myssqli_connect_error());
         }
-        ?>
+        
+        if(isset($_POST['nazwisko']) && $_POST['nazwisko'] != '') {
+            $nazwisko = $_POST['nazwisko'];
 
-        <?php
-        $sql = "SELECT * FROM uczniowie";
+            $nazwisko = mysqli_real_escape_string($conn, $nazwisko);
+
+            $sql = "SELECT * FROM uczniowie WHERE nazwisko='$nazwisko'";
+
+        } else {$sql = "SELECT * FROM uczniowie";
+
+        }
+
         $result = mysqli_query($conn, $sql);
+        if(mysqli_num_rows($result) > 0){
 
-        if (mysqli_num_rows($result) > 0) {
-            echo "<table border='1'><tr><th>Imię</th><th>Nazwisko</th><th>Wiek</th>
+            echo "<table border='1'><tr><th>Imie</th><th>Nazwisko</th><th>Wiek</th></tr>";
 
-            </tr>";
-    while($row = mysqli_fetch_assoc($result)) {
-        echo "<tr><td>".$row["imie"]."</td><td>".$row["nazwisko"]."</td><td>".$row["wiek"]."</td></tr>";
-    }
-
-    echo "</table>";
-} else {
-    echo "Brak wyników";
-}
-mysqli_close($conn);
-?>
+            while($row = mysqli_fetch_assoc($result)) {
+                echo "<tr><td>".$row["imie"]."</td><td>".$row["nazwisko"]."</td><td>".$row["wiek"]."</td></tr>";
+            }
+            echo "</table>";
+        } else {
+            echo "Brak wyników";
+        }
+        mysqli_close($conn);
+        ?>
 
 </html>
